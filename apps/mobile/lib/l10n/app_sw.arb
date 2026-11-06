@@ -1,0 +1,66 @@
+{
+  "@@locale": "sw",
+  "appTitle": "Foleni wa Kliniki",
+  "tagline": "Miadi ya Kliniki na Ufuatiliaji wa Foleni Nairobi",
+  "offlineBanner": "Hali ya nje ya mtandao. Inaonyesha data iliyohifadhiwa.",
+
+  "navClinics": "Kliniki",
+  "navQueue": "Foleni Moja kwa Moja",
+  "navStaff": "Sehemu ya Wahudumu",
+
+  "authWelcome": "Karibu Foleni wa Kliniki",
+  "authInstruction": "Weka nambari yako ya simu ya Kenya ili kuingia",
+  "authPhoneLabel": "Nambari ya Simu (+254...)",
+  "authSignInButton": "Ingia kwa Simu",
+  "authInvalidPhone": "Tafadhali weka nambari halali ya Kenya (mf. 0712 345 678)",
+  "authRolePatient": "Mgonjwa",
+  "authRoleStaff": "Mhudumu wa Kliniki",
+
+  "clinicsTitle": "Vituo vya Afya Nairobi",
+  "clinicsSearchHint": "Tafuta kliniki au eneo...",
+  "clinicSlotsAvailable": "Nafasi {count} zinapatikana leo",
+  "@clinicSlotsAvailable": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "bookingTitle": "Weka Miadi",
+  "bookingSelectSlot": "Chagua Muda wa Miadi",
+  "bookingReasonLabel": "Sababu ya Ushauri",
+  "bookingReasonHint": "mf. Uchunguzi wa Jumla, Chanjo ya Mtoto, Huduma ya Kwanza",
+  "bookingConfirmButton": "Thibitisha & Jiunge na Foleni",
+  "bookingSuccess": "Miadi imethibitishwa! Tiketi #{ticketNumber}",
+  "@bookingSuccess": {
+    "placeholders": {
+      "ticketNumber": { "type": "String" }
+    }
+  },
+
+  "queueTitle": "Hali ya Foleni",
+  "queueTicketNumber": "Tiketi #{ticketNumber}",
+  "@queueTicketNumber": {
+    "placeholders": {
+      "ticketNumber": { "type": "String" }
+    }
+  },
+  "queuePeopleAhead": "Watu walio mbele yako",
+  "queueEstimatedWait": "Muda unaokadiriwa kusubiri",
+  "queueStatusWaiting": "Unasubiri kwenye foleni",
+  "queueStatusCalled": "Umeitwa! Tafadhali ingia chumba cha daktari.",
+  "queueStatusInService": "Ushauri unaendelea",
+  "queueStatusDone": "Ushauri umekamilika",
+  "queueStatusCancelled": "Miadi imefutiliwa mbali",
+  "queueCancelButton": "Ghairi Tiketi",
+
+  "staffDashboardTitle": "Dashibodi ya Wahudumu",
+  "staffCallNextButton": "Ita Mgonjwa Anayefuata",
+  "staffStartServiceButton": "Anza Ushauri",
+  "staffCompleteButton": "Weka Imekamilika",
+  "staffNoShowButton": "Hakufika (No-Show)",
+  "staffNoWaiting": "Hakuna wagonjwa wanaosubiri kwa sasa.",
+
+  "errorGeneric": "Hitilafu imetokea. Tafadhali jaribu tena.",
+  "errorDoubleBooking": "Nafasi hii imechukuliwa na mgonjwa mwingine. Tafadhali chagua nyingine."
+}
+

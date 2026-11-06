@@ -1,0 +1,66 @@
+{
+  "@@locale": "en",
+  "appTitle": "Clinic Queue",
+  "tagline": "Nairobi Outpatient Appointments & Live Queues",
+  "offlineBanner": "Offline mode active. Showing cached queue updates.",
+  
+  "navClinics": "Clinics",
+  "navQueue": "Live Queue",
+  "navStaff": "Staff Portal",
+
+  "authWelcome": "Welcome to Clinic Queue",
+  "authInstruction": "Enter your Kenyan mobile number for quick sign-in",
+  "authPhoneLabel": "Mobile Number (+254...)",
+  "authSignInButton": "Sign In with Mobile",
+  "authInvalidPhone": "Please enter a valid Kenyan phone number (e.g. 0712 345 678)",
+  "authRolePatient": "Patient",
+  "authRoleStaff": "Clinical Staff",
+
+  "clinicsTitle": "Nairobi Health Facilities",
+  "clinicsSearchHint": "Search clinic or sub-county...",
+  "clinicSlotsAvailable": "{count} slots available today",
+  "@clinicSlotsAvailable": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "bookingTitle": "Book Appointment",
+  "bookingSelectSlot": "Select Appointment Time",
+  "bookingReasonLabel": "Consultation Reason",
+  "bookingReasonHint": "e.g. General Consultation, Child Immunisation, Triage",
+  "bookingConfirmButton": "Confirm & Join Queue",
+  "bookingSuccess": "Appointment confirmed! Ticket #{ticketNumber}",
+  "@bookingSuccess": {
+    "placeholders": {
+      "ticketNumber": { "type": "String" }
+    }
+  },
+
+  "queueTitle": "Live Queue Status",
+  "queueTicketNumber": "Ticket #{ticketNumber}",
+  "@queueTicketNumber": {
+    "placeholders": {
+      "ticketNumber": { "type": "String" }
+    }
+  },
+  "queuePeopleAhead": "People ahead of you",
+  "queueEstimatedWait": "Estimated wait time",
+  "queueStatusWaiting": "Waiting in queue",
+  "queueStatusCalled": "You have been called! Proceed to Consultation Room.",
+  "queueStatusInService": "Currently in consultation",
+  "queueStatusDone": "Consultation completed",
+  "queueStatusCancelled": "Appointment cancelled",
+  "queueCancelButton": "Cancel Ticket",
+
+  "staffDashboardTitle": "Staff Triage Console",
+  "staffCallNextButton": "Call Next Patient",
+  "staffStartServiceButton": "Start Consultation",
+  "staffCompleteButton": "Mark Completed",
+  "staffNoShowButton": "Mark No-Show",
+  "staffNoWaiting": "No patients currently waiting in queue.",
+
+  "errorGeneric": "An unexpected error occurred. Please try again.",
+  "errorDoubleBooking": "This slot was just taken by another patient. Please pick another."
+}
+
