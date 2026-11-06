@@ -1,10 +1,16 @@
 // path: apps/mobile/lib/presentation/screens/slot_picker_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import '../../core/di/injection.dart';
 import '../../core/router/route_names.dart';
 import '../../core/theme/app_colors.dart';
+import '../blocs/booking/booking_bloc.dart';
+import '../blocs/booking/booking_event.dart';
+import '../blocs/booking/booking_state.dart';
 
-class SlotPickerScreen extends StatefulWidget {
+class SlotPickerScreen extends StatelessWidget {
   final String clinicId;
   final String clinicName;
 
@@ -15,23 +21,32 @@ class SlotPickerScreen extends StatefulWidget {
   });
 
   @override
-  State<SlotPickerScreen> createState() => _SlotPickerScreenState();
+  Widget build(BuildContext context) {
+    return BlocProvider<BookingBloc>(
+      create: (context) => getIt<BookingBloc>()..add(BookingSlotsLoadRequested(clinicId)),
+      child: _SlotPickerView(clinicId: clinicId, clinicName: clinicName),
+    );
+  }
 }
 
-class _SlotPickerScreenState extends State<SlotPickerScreen> {
+class _SlotPickerView extends StatefulWidget {
+  final String clinicId;
+  final String clinicName;
+
+  const _SlotPickerView({
+    required this.clinicId,
+    required this.clinicName,
+  });
+
+  @override
+  State<_SlotPickerView> createState() => _SlotPickerViewState();
+}
+
+class _SlotPickerViewState extends State<_SlotPickerView> {
   String? _selectedSlotId;
   final TextEditingController _reasonController = TextEditingController(text: 'General Triage Consultation');
-  bool _isSubmitting = false;
 
-  final List<Map<String, String>> _slots = const [
-    {'id': 'slot_0900', 'time': '09:00 AM - 09:30 AM', 'status': 'available'},
-    {'id': 'slot_0930', 'time': '09:30 AM - 10:00 AM', 'status': 'available'},
-    {'id': 'slot_1000', 'time': '10:00 AM - 10:30 AM', 'status': 'full'},
-    {'id': 'slot_1030', 'time': '10:30 AM - 11:00 AM', 'status': 'available'},
-    {'id': 'slot_1100', 'time': '11:00 AM - 11:30 AM', 'status': 'available'},
-  ];
-
-  Future<void> _handleConfirmBooking() async {
+  void _onConfirmBooking(BuildContext context) {
     if (_selectedSlotId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select an appointment time slot.')),
@@ -39,16 +54,14 @@ class _SlotPickerScreenState extends State<SlotPickerScreen> {
       return;
     }
 
-    setState(() => _isSubmitting = true);
-    await Future.delayed(const Duration(milliseconds: 600));
-
-    if (!mounted) return;
-    setState(() => _isSubmitting = false);
-
-    // Navigate to ticket confirmation
-    context.push(
-      '${RouteNames.ticketConfirmation}?ticket=A042&clinic=${Uri.encodeComponent(widget.clinicName)}',
-    );
+    context.read<BookingBloc>().add(
+          BookingSubmitted(
+            clinicId: widget.clinicId,
+            slotId: _selectedSlotId!,
+            patientId: 'patient-demo-uid',
+            reasonCode: _reasonController.text.trim(),
+          ),
+        );
   }
 
   @override
@@ -59,85 +72,113 @@ class _SlotPickerScreenState extends State<SlotPickerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final timeFormat = DateFormat('hh:mm a');
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.clinicName),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Select Available Time Slot',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            ..._slots.map((slot) {
-              final isSelected = _selectedSlotId == slot['id'];
-              final isFull = slot['status'] == 'full';
+      body: BlocConsumer<BookingBloc, BookingState>(
+        listener: (context, state) {
+          if (state is BookingSuccess) {
+            context.push(
+              '${RouteNames.ticketConfirmation}?ticket=${state.ticket.ticketNumber}&clinic=${Uri.encodeComponent(widget.clinicName)}',
+            );
+          } else if (state is BookingFailureState) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: AppColors.statusNoShow,
+              ),
+            );
+          }
+        },
+        builder: (context, state) {
+          if (state is BookingLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-              return Card(
-                color: isSelected ? AppColors.secondaryContainer : null,
-                margin: const EdgeInsets.only(bottom: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(
-                    color: isSelected ? AppColors.primaryTeal : Colors.grey.shade300,
+          if (state is BookingSlotsLoaded) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Select Available Time Slot',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
-                ),
-                child: ListTile(
-                  enabled: !isFull,
-                  leading: Icon(
-                    Icons.schedule,
-                    color: isFull ? Colors.grey : AppColors.primaryTeal,
+                  const SizedBox(height: 12),
+                  if (state.slots.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 32.0),
+                      child: Center(child: Text('No slots scheduled for today.')),
+                    )
+                  else
+                    ...state.slots.map((slot) {
+                      final isSelected = _selectedSlotId == slot.id;
+                      final isFull = !slot.isAvailable;
+                      final timeRange = '${timeFormat.format(slot.startTime)} - ${timeFormat.format(slot.endTime)}';
+
+                      return Card(
+                        color: isSelected ? AppColors.secondaryContainer : null,
+                        margin: const EdgeInsets.only(bottom: 8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(
+                            color: isSelected ? AppColors.primaryTeal : Colors.grey.shade300,
+                          ),
+                        ),
+                        child: ListTile(
+                          enabled: !isFull,
+                          leading: Icon(
+                            Icons.schedule,
+                            color: isFull ? Colors.grey : AppColors.primaryTeal,
+                          ),
+                          title: Text(
+                            timeRange,
+                            style: TextStyle(
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              color: isFull ? Colors.grey : null,
+                            ),
+                          ),
+                          trailing: isFull
+                              ? const Text('Full', style: TextStyle(color: Colors.red, fontSize: 12))
+                              : Radio<String>(
+                                  value: slot.id,
+                                  groupValue: _selectedSlotId,
+                                  onChanged: (val) => setState(() => _selectedSlotId = val),
+                                ),
+                          onTap: isFull ? null : () => setState(() => _selectedSlotId = slot.id),
+                        ),
+                      );
+                    }),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'Consultation Reason (Minimal Non-Diagnostic)',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                   ),
-                  title: Text(
-                    slot['time']!,
-                    style: TextStyle(
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      color: isFull ? Colors.grey : null,
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _reasonController,
+                    decoration: InputDecoration(
+                      hintText: 'e.g. Immunisation, Routine Triage, Dental Check',
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                   ),
-                  trailing: isFull
-                      ? const Text('Full', style: TextStyle(color: Colors.red, fontSize: 12))
-                      : Radio<String>(
-                          value: slot['id']!,
-                          groupValue: _selectedSlotId,
-                          onChanged: (val) => setState(() => _selectedSlotId = val),
-                        ),
-                  onTap: isFull ? null : () => setState(() => _selectedSlotId = slot['id']),
-                ),
-              );
-            }),
-            const SizedBox(height: 20),
-            const Text(
-              'Consultation Reason (Minimal Non-Diagnostic)',
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _reasonController,
-              decoration: InputDecoration(
-                hintText: 'e.g. Immunisation, Routine Triage, Dental Check',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  const SizedBox(height: 32),
+                  ElevatedButton(
+                    onPressed: () => _onConfirmBooking(context),
+                    child: const Text('Confirm Appointment & Join Queue'),
+                  ),
+                ],
               ),
-            ),
-            const SizedBox(height: 32),
-            ElevatedButton(
-              onPressed: _isSubmitting ? null : _handleConfirmBooking,
-              child: _isSubmitting
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                    )
-                  : const Text('Confirm Appointment & Join Queue'),
-            ),
-          ],
-        ),
+            );
+          }
+
+          return const SizedBox.shrink();
+        },
       ),
     );
   }
 }
-

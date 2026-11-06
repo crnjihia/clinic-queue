@@ -17,9 +17,11 @@ import '../../domain/usecases/advance_queue_usecase.dart';
 import '../../domain/usecases/book_slot_usecase.dart';
 import '../../domain/usecases/cancel_ticket_usecase.dart';
 import '../../domain/usecases/get_clinics_usecase.dart';
+import '../../domain/usecases/get_slots_usecase.dart';
 import '../../domain/usecases/sign_in_usecase.dart';
 import '../../domain/usecases/watch_live_queue_usecase.dart';
 import '../../presentation/blocs/auth/auth_bloc.dart';
+import '../../presentation/blocs/booking/booking_bloc.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -84,6 +86,9 @@ Future<void> configureDependencies(String environment) async {
   if (!getIt.isRegistered<GetClinicsUseCase>()) {
     getIt.registerLazySingleton<GetClinicsUseCase>(() => GetClinicsUseCase(getIt<ClinicRepository>()));
   }
+  if (!getIt.isRegistered<GetSlotsUseCase>()) {
+    getIt.registerLazySingleton<GetSlotsUseCase>(() => GetSlotsUseCase(getIt<ClinicRepository>()));
+  }
   if (!getIt.isRegistered<BookSlotUseCase>()) {
     getIt.registerLazySingleton<BookSlotUseCase>(() => BookSlotUseCase(getIt<QueueRepository>()));
   }
@@ -103,6 +108,15 @@ Future<void> configureDependencies(String environment) async {
       () => AuthBloc(
         authRepository: getIt<AuthRepository>(),
         signInUseCase: getIt<SignInUseCase>(),
+      ),
+    );
+  }
+  if (!getIt.isRegistered<BookingBloc>()) {
+    getIt.registerFactory<BookingBloc>(
+      () => BookingBloc(
+        getClinicsUseCase: getIt<GetClinicsUseCase>(),
+        getSlotsUseCase: getIt<GetSlotsUseCase>(),
+        bookSlotUseCase: getIt<BookSlotUseCase>(),
       ),
     );
   }
