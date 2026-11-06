@@ -5,6 +5,7 @@ import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
 import '../../data/datasources/auth_remote_datasource.dart';
+import '../../data/datasources/fcm_remote_datasource.dart';
 import '../../data/datasources/firestore_queue_datasource.dart';
 import '../../data/datasources/firestore_seed_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
@@ -60,6 +61,11 @@ Future<void> configureDependencies(String environment) async {
   if (!getIt.isRegistered<FirestoreSeedDataSource>()) {
     getIt.registerLazySingleton<FirestoreSeedDataSource>(
       () => FirestoreSeedDataSource(firestore: getIt<FirebaseFirestore>()),
+    );
+  }
+  if (!getIt.isRegistered<FcmRemoteDataSource>()) {
+    getIt.registerLazySingleton<FcmRemoteDataSource>(
+      () => FcmRemoteDataSource(),
     );
   }
 
