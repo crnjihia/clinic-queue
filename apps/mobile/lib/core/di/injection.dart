@@ -17,11 +17,13 @@ import '../../domain/usecases/advance_queue_usecase.dart';
 import '../../domain/usecases/book_slot_usecase.dart';
 import '../../domain/usecases/cancel_ticket_usecase.dart';
 import '../../domain/usecases/get_clinics_usecase.dart';
+import '../../domain/usecases/get_service_durations_usecase.dart';
 import '../../domain/usecases/get_slots_usecase.dart';
 import '../../domain/usecases/sign_in_usecase.dart';
 import '../../domain/usecases/watch_live_queue_usecase.dart';
 import '../../presentation/blocs/auth/auth_bloc.dart';
 import '../../presentation/blocs/booking/booking_bloc.dart';
+import '../../presentation/blocs/queue/queue_bloc.dart';
 
 final GetIt getIt = GetIt.instance;
 
@@ -95,6 +97,11 @@ Future<void> configureDependencies(String environment) async {
   if (!getIt.isRegistered<WatchLiveQueueUseCase>()) {
     getIt.registerLazySingleton<WatchLiveQueueUseCase>(() => WatchLiveQueueUseCase(getIt<QueueRepository>()));
   }
+  if (!getIt.isRegistered<GetServiceDurationsUseCase>()) {
+    getIt.registerLazySingleton<GetServiceDurationsUseCase>(
+      () => GetServiceDurationsUseCase(getIt<QueueRepository>()),
+    );
+  }
   if (!getIt.isRegistered<AdvanceQueueUseCase>()) {
     getIt.registerLazySingleton<AdvanceQueueUseCase>(() => AdvanceQueueUseCase(getIt<QueueRepository>()));
   }
@@ -117,6 +124,16 @@ Future<void> configureDependencies(String environment) async {
         getClinicsUseCase: getIt<GetClinicsUseCase>(),
         getSlotsUseCase: getIt<GetSlotsUseCase>(),
         bookSlotUseCase: getIt<BookSlotUseCase>(),
+      ),
+    );
+  }
+  if (!getIt.isRegistered<QueueBloc>()) {
+    getIt.registerFactory<QueueBloc>(
+      () => QueueBloc(
+        watchLiveQueueUseCase: getIt<WatchLiveQueueUseCase>(),
+        getServiceDurationsUseCase: getIt<GetServiceDurationsUseCase>(),
+        cancelTicketUseCase: getIt<CancelTicketUseCase>(),
+        queueRepository: getIt<QueueRepository>(),
       ),
     );
   }
