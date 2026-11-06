@@ -1,0 +1,78 @@
+// path: firestore.rules
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isUser(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isStaff() {
+      return isAuthenticated() && getUserData().role == 'staff';
+    }
+
+    function isPatient() {
+      return isAuthenticated() && (getUserData().role == 'patient' || getUserData().role == null);
+    }
+
+    // Clinics Directory (Publicly readable, staff managed)
+    match /clinics/{clinicId} {
+      allow read: if true;
+      allow write: if isStaff();
+
+      // Appointment Slots subcollection
+      match /slots/{slotId} {
+        allow read: if true;
+        // Patients can increment bookedCount during transactional booking
+        allow update: if isAuthenticated() &&
+          request.resource.data.bookedCount <= request.resource.data.capacity;
+        allow create, delete: if isStaff();
+      }
+
+      // Live Queue Tickets subcollection
+      match /queue/{ticketId} {
+        // Patient can read their own ticket, staff can read all tickets in the clinic queue
+        allow read: if isAuthenticated() && (
+          resource.data.patientId == request.auth.uid || isStaff()
+        );
+
+        // Patient can create a ticket with status 'waiting' assigned to their own uid
+        allow create: if isAuthenticated() &&
+          request.resource.data.patientId == request.auth.uid &&
+          request.resource.data.status == 'waiting';
+
+        // Patient can only cancel their own ticket; staff can update to any valid status
+        allow update: if isAuthenticated() && (
+          (resource.data.patientId == request.auth.uid && request.resource.data.status == 'cancelled') ||
+          isStaff()
+        );
+
+        // Disallow document deletion to preserve clinic audit trail
+        allow delete: if false;
+      }
+    }
+
+    // collectionGroup rule for patients querying their active ticket across all clinics
+    match /{path=**}/queue/{ticketId} {
+      allow read: if isAuthenticated() && (
+        resource.data.patientId == request.auth.uid || isStaff()
+      );
+    }
+
+    // User profiles & FCM device tokens
+    match /users/{uid} {
+      allow read: if isUser(uid) || isStaff();
+      allow create, update: if isUser(uid);
+      allow delete: if false;
+    }
+  }
+}
