@@ -33,3 +33,4 @@ class Clinic extends Equatable {
         availableSlotsToday,
       ];
 }
+

@@ -13,3 +13,4 @@ abstract class ClinicRepository {
   /// Fetch available appointment time slots for a given clinic
   Future<Result<List<QueueSlot>>> getSlots(String clinicId);
 }
+

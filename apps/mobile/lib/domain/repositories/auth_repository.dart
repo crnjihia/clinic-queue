@@ -21,3 +21,4 @@ abstract class AuthRepository {
   /// Register or update device FCM token for push alerts
   Future<Result<void>> registerFcmToken(String token);
 }
+

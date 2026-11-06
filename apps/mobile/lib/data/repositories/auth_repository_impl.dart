@@ -54,3 +54,4 @@ class AuthRepositoryImpl implements AuthRepository {
     return const Success(null);
   }
 }
+

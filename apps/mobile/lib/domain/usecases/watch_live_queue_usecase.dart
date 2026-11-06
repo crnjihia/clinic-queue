@@ -11,3 +11,4 @@ class WatchLiveQueueUseCase {
     return _repository.watchPatientTicket(patientId);
   }
 }
+

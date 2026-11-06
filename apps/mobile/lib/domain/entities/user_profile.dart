@@ -41,3 +41,4 @@ class UserProfile extends Equatable {
   @override
   List<Object?> get props => [uid, phoneNumber, displayName, role, fcmTokens];
 }
+

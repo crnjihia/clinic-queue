@@ -12,3 +12,4 @@ class GetClinicsUseCase {
     return _repository.getClinics();
   }
 }
+

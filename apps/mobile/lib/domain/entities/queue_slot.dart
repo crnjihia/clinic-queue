@@ -31,3 +31,4 @@ class QueueSlot extends Equatable {
         bookedCount,
       ];
 }
+

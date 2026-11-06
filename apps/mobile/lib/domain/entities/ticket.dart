@@ -95,3 +95,4 @@ class Ticket extends Equatable {
         reasonCode,
       ];
 }
+
