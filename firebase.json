@@ -1,4 +1,3 @@
-// path: firebase.json
 {
   "firestore": {
     "rules": "firestore.rules",
