@@ -1,0 +1,7 @@
+# path: functions/.gitignore
+node_modules/
+lib/
+npm-debug.log
+yarn-error.log
+.env
+.env.*
