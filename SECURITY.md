@@ -14,7 +14,7 @@ We take the security of healthcare data, queue integrity, and payment workflows 
 
 If you discover a security vulnerability in Clinic Queue:
 1. **Do not open a public GitHub issue.**
-2. Email vulnerability details to `security@clinicqueue.ke` (or contact the maintainer Chris directly on GitHub).
+2. Email vulnerability details to `crnjihia@gmail.com` (or contact the maintainer Chris directly on GitHub).
 3. Include detailed steps to reproduce the issue, proof of concept, and affected versions.
 4. We will acknowledge receipt within 48 hours and provide a remediation timeline.
 
