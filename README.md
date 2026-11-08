@@ -1,4 +1,4 @@
-# Clinic Queue (`clinic-queue`) 🏥
+# Clinic Queue (`clinic-queue`) 🏥🇰🇪
 
 [![CI Workflow](https://github.com/crnjihia/clinic-queue/actions/workflows/ci.yml/badge.svg)](https://github.com/crnjihia/clinic-queue/actions/workflows/ci.yml)
 [![Release v1.0.0](https://img.shields.io/badge/Release-v1.0.0-blue.svg)](https://github.com/crnjihia/clinic-queue/releases/tag/v1.0.0)
@@ -13,9 +13,9 @@
 ## 📱 Application Screenshots
 
 <div align="center">
-  <img src="docs/assets/screenshots/clinics_list.png" width="30%" alt="Nairobi Clinics List" />
-  <img src="docs/assets/screenshots/live_queue.png" width="30%" alt="Live Queue Ticket" />
-  <img src="docs/assets/screenshots/app_settings.png" width="30%" alt="Compact App Settings" />
+  <img src="https://raw.githubusercontent.com/crnjihia/clinic-queue/main/docs/assets/screenshots/clinics_list.png" width="30%" alt="Nairobi Clinics List" />
+  <img src="https://raw.githubusercontent.com/crnjihia/clinic-queue/main/docs/assets/screenshots/live_queue.png" width="30%" alt="Live Queue Ticket" />
+  <img src="https://raw.githubusercontent.com/crnjihia/clinic-queue/main/docs/assets/screenshots/app_settings.png" width="30%" alt="Compact App Settings" />
 </div>
 
 | Nairobi Clinics Discovery | Live Queue Ticket (`#A042`) | Zero-Scroll Settings (Dark Mode) |
@@ -49,7 +49,7 @@ graph TD
     UI --> BLoC
     BLoC --> UseCases
     UseCases --> RepoInterfaces
-    RepoImpl ..|> RepoInterfaces
+    RepoImpl -.-> RepoInterfaces
     RepoImpl --> DataSources
     DataSources --> FirebaseSDK
 ```

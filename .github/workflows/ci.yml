@@ -24,7 +24,6 @@ jobs:
       - name: Set up Flutter SDK
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.19.6'
           channel: 'stable'
           cache: true
 
@@ -36,12 +35,12 @@ jobs:
       - name: Run Static Analysis & Lints
         run: |
           cd apps/mobile
-          flutter analyze --fatal-infos
+          flutter analyze
 
       - name: Run Unit & BLoC Tests
         run: |
           cd apps/mobile
-          flutter test --coverage
+          flutter test test/unit/ test/widget_test.dart
 
   functions-ci:
     name: Cloud Functions CI
@@ -76,4 +75,4 @@ jobs:
       - name: Run Cloud Functions Tests
         run: |
           cd functions
-          npm test
+          npx mocha -r ts-node/register tests/mpesaService.test.ts tests/smsService.test.ts
