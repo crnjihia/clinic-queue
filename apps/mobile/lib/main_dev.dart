@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'app.dart';
 import 'core/config/app_flavor.dart';
 import 'core/config/firebase_options_dev.dart';
+import 'core/di/injection.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,8 +16,8 @@ Future<void> main() async {
     options: DevFirebaseOptions.currentPlatform,
   );
 
-  // Hook into local Firebase Emulators when running in DEV flavor
-  const emulatorHost = '127.0.0.1';
+  // Hook into local Firebase Emulators when running in DEV flavor (10.0.2.2 for Android Emulator)
+  const emulatorHost = '10.0.2.2';
   try {
     await FirebaseAuth.instance.useAuthEmulator(emulatorHost, 9099);
     FirebaseFirestore.instance.useFirestoreEmulator(emulatorHost, 8080);
@@ -27,6 +28,8 @@ Future<void> main() async {
   } catch (e) {
     debugPrint('Firebase emulator already configured or failed to connect: $e');
   }
+
+  await configureDependencies('dev');
 
   runApp(const ClinicQueueApp());
 }

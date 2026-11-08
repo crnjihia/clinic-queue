@@ -160,3 +160,4 @@ class QueueBloc extends Bloc<QueueEvent, QueueState> {
     return super.close();
   }
 }
+

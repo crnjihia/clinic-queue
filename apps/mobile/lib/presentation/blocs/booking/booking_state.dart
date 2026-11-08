@@ -68,3 +68,4 @@ class BookingFailureState extends BookingState {
   @override
   List<Object?> get props => [message];
 }
+

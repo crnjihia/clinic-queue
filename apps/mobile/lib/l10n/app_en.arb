@@ -3,7 +3,7 @@
   "appTitle": "Clinic Queue",
   "tagline": "Nairobi Outpatient Appointments & Live Queues",
   "offlineBanner": "Offline mode active. Showing cached queue updates.",
-  
+
   "navClinics": "Clinics",
   "navQueue": "Live Queue",
   "navStaff": "Staff Portal",
@@ -37,6 +37,27 @@
     }
   },
 
+  "paymentTitle": "Consultation Fee (KES {amount})",
+  "@paymentTitle": {
+    "placeholders": {
+      "amount": { "type": "double" }
+    }
+  },
+  "paymentPhoneLabel": "M-Pesa Mobile Number (+254...)",
+  "paymentStkPrompt": "Sending STK Push to {phone}. Please enter your M-Pesa PIN on your phone.",
+  "@paymentStkPrompt": {
+    "placeholders": {
+      "phone": { "type": "String" }
+    }
+  },
+  "paymentSuccess": "M-Pesa payment received! Receipt #{receipt}",
+  "@paymentSuccess": {
+    "placeholders": {
+      "receipt": { "type": "String" }
+    }
+  },
+  "paymentFailed": "Payment failed. Please try again.",
+
   "queueTitle": "Live Queue Status",
   "queueTicketNumber": "Ticket #{ticketNumber}",
   "@queueTicketNumber": {
@@ -63,4 +84,3 @@
   "errorGeneric": "An unexpected error occurred. Please try again.",
   "errorDoubleBooking": "This slot was just taken by another patient. Please pick another."
 }
-

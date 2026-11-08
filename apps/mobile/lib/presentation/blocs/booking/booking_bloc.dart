@@ -80,3 +80,4 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     );
   }
 }
+

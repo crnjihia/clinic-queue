@@ -12,3 +12,4 @@ class GetSlotsUseCase {
     return _repository.getSlots(clinicId);
   }
 }
+

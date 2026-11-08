@@ -1,5 +1,6 @@
 // path: apps/mobile/lib/data/models/ticket_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../domain/entities/payment.dart';
 import '../../domain/entities/ticket.dart';
 
 class TicketModel {
@@ -12,6 +13,8 @@ class TicketModel {
   final DateTime? serviceStartedAt;
   final DateTime? serviceCompletedAt;
   final String reasonCode;
+  final String paymentStatus;
+  final String? mpesaCheckoutRequestId;
 
   const TicketModel({
     required this.id,
@@ -23,6 +26,8 @@ class TicketModel {
     this.serviceStartedAt,
     this.serviceCompletedAt,
     required this.reasonCode,
+    this.paymentStatus = 'completed',
+    this.mpesaCheckoutRequestId,
   });
 
   factory TicketModel.fromFirestore(
@@ -44,6 +49,8 @@ class TicketModel {
       serviceStartedAt: startedTimestamp?.toDate(),
       serviceCompletedAt: completedTimestamp?.toDate(),
       reasonCode: (data['reasonCode'] as String?) ?? 'GENERAL_TRIAGE',
+      paymentStatus: (data['paymentStatus'] as String?) ?? 'completed',
+      mpesaCheckoutRequestId: data['mpesaCheckoutRequestId'] as String?,
     );
   }
 
@@ -57,6 +64,8 @@ class TicketModel {
       if (serviceStartedAt != null) 'serviceStartedAt': Timestamp.fromDate(serviceStartedAt!),
       if (serviceCompletedAt != null) 'serviceCompletedAt': Timestamp.fromDate(serviceCompletedAt!),
       'reasonCode': reasonCode,
+      'paymentStatus': paymentStatus,
+      if (mpesaCheckoutRequestId != null) 'mpesaCheckoutRequestId': mpesaCheckoutRequestId,
     };
   }
 
@@ -71,7 +80,8 @@ class TicketModel {
       serviceStartedAt: serviceStartedAt,
       serviceCompletedAt: serviceCompletedAt,
       reasonCode: reasonCode,
+      paymentStatus: PaymentStatus.fromString(paymentStatus),
+      mpesaCheckoutRequestId: mpesaCheckoutRequestId,
     );
   }
 }
-

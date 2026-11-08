@@ -8,8 +8,8 @@ class RouteNames {
   static const String ticketConfirmation = '/booking/confirmation';
   static const String liveQueue = '/queue';
   static const String staffDashboard = '/staff';
+  static const String settings = '/settings';
 
   // Sub-routes / helpers
   static String slotPickerPath(String clinicId) => '/clinics/$clinicId/slots';
 }
-

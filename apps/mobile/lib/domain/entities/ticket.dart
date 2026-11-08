@@ -1,5 +1,6 @@
 // path: apps/mobile/lib/domain/entities/ticket.dart
 import 'package:equatable/equatable.dart';
+import 'payment.dart';
 
 enum TicketStatus {
   waiting,
@@ -57,6 +58,8 @@ class Ticket extends Equatable {
   final DateTime? serviceStartedAt;
   final DateTime? serviceCompletedAt;
   final String reasonCode; // Minimal non-diagnostic appointment code (e.g. 'TRIAGE_GENERAL')
+  final PaymentStatus paymentStatus;
+  final String? mpesaCheckoutRequestId;
 
   const Ticket({
     required this.id,
@@ -68,6 +71,8 @@ class Ticket extends Equatable {
     this.serviceStartedAt,
     this.serviceCompletedAt,
     required this.reasonCode,
+    this.paymentStatus = PaymentStatus.completed,
+    this.mpesaCheckoutRequestId,
   });
 
   bool get isActive => status == TicketStatus.waiting || status == TicketStatus.called || status == TicketStatus.inService;
@@ -93,6 +98,7 @@ class Ticket extends Equatable {
         serviceStartedAt,
         serviceCompletedAt,
         reasonCode,
+        paymentStatus,
+        mpesaCheckoutRequestId,
       ];
 }
-

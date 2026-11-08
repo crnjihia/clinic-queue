@@ -57,3 +57,4 @@ class QueueTicketCancelRequested extends QueueEvent {
   @override
   List<Object?> get props => [clinicId, ticketId];
 }
+

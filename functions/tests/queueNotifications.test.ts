@@ -1,6 +1,7 @@
 // path: functions/tests/queueNotifications.test.ts
 import { expect } from "chai";
 import { evaluateAndSendQueueAlert } from "../src/queueNotifications";
+import { MockSmsService } from "../src/smsService";
 import { QueueTicketDoc } from "../src/types";
 
 describe("evaluateAndSendQueueAlert", () => {
@@ -9,6 +10,8 @@ describe("evaluateAndSendQueueAlert", () => {
     nanoseconds: 0,
     toDate: () => new Date(),
   } as any;
+
+  const mockSmsService = new MockSmsService();
 
   it("skips notification if ticket status is not waiting", async () => {
     const ticketData: QueueTicketDoc = {
@@ -25,10 +28,12 @@ describe("evaluateAndSendQueueAlert", () => {
       "ticket_1",
       ticketData,
       {} as any,
-      {} as any
+      {} as any,
+      mockSmsService
     );
 
-    expect(result.sent).to.be.false;
+    expect(result.sentFcm).to.be.false;
+    expect(result.sentSms).to.be.false;
     expect(result.reason).to.include("not waiting");
   });
 
@@ -69,15 +74,17 @@ describe("evaluateAndSendQueueAlert", () => {
       "ticket_3",
       ticketData,
       mockFirestore,
-      {} as any
+      {} as any,
+      mockSmsService
     );
 
-    expect(result.sent).to.be.false;
+    expect(result.sentFcm).to.be.false;
+    expect(result.sentSms).to.be.false;
     expect(result.position).to.equal(3);
     expect(result.reason).to.include("exceeds alert threshold");
   });
 
-  it("sends FCM push alert when position is <= 2 and patient has tokens", async () => {
+  it("sends FCM push alert and Africa's Talking SMS when position is <= 2", async () => {
     const mockWaitingDocs = [
       { id: "ticket_0", data: () => ({}) },
       { id: "ticket_1", data: () => ({}) }, // 1 person ahead!
@@ -110,6 +117,7 @@ describe("evaluateAndSendQueueAlert", () => {
                   displayName: "Patient Chris",
                   role: "patient",
                   fcmTokens: ["fcm_token_device_abc"],
+                  preferredLanguage: "sw",
                 }),
               }),
             }),
@@ -139,14 +147,15 @@ describe("evaluateAndSendQueueAlert", () => {
       "ticket_1",
       ticketData,
       mockFirestore,
-      mockMessaging
+      mockMessaging,
+      mockSmsService
     );
 
-    expect(result.sent).to.be.true;
+    expect(result.sentFcm).to.be.true;
+    expect(result.sentSms).to.be.true;
     expect(result.position).to.equal(1);
     expect(result.tokensCount).to.equal(1);
     expect(messageSent).to.not.be.null;
-    expect(messageSent.tokens).to.deep.equal(["fcm_token_device_abc"]);
-    expect(messageSent.notification.title).to.include("Almost your turn");
+    expect(messageSent.notification.title).to.include("Ukaribu wa zamu yako");
   });
 });

@@ -39,6 +39,54 @@ class FirestoreSeedDataSource {
 
   Future<void> seedIfEmpty() async {
     final existing = await _firestore.collection('clinics').limit(1).get();
+
+    // Always ensure patient-demo-uid has a live ticket seeded in Mbagathi
+    final demoTicketQuery = await _firestore
+        .collection('clinics')
+        .doc('c_mbagathi')
+        .collection('queue')
+        .doc('ticket_demo_042')
+        .get();
+
+    if (!demoTicketQuery.exists) {
+      final now = DateTime.now();
+      final mbagathiQueue = _firestore.collection('clinics').doc('c_mbagathi').collection('queue');
+
+      // 1. Patient currently in consultation
+      await mbagathiQueue.doc('ticket_040').set({
+        'clinicId': 'c_mbagathi',
+        'patientId': 'patient_external_01',
+        'ticketNumber': 'A040',
+        'status': 'in_service',
+        'joinedAt': Timestamp.fromDate(now.subtract(const Duration(minutes: 35))),
+        'serviceStartedAt': Timestamp.fromDate(now.subtract(const Duration(minutes: 10))),
+        'reasonCode': 'GENERAL_TRIAGE',
+        'paymentStatus': 'completed',
+      });
+
+      // 2. Patient 1 person ahead
+      await mbagathiQueue.doc('ticket_041').set({
+        'clinicId': 'c_mbagathi',
+        'patientId': 'patient_external_02',
+        'ticketNumber': 'A041',
+        'status': 'waiting',
+        'joinedAt': Timestamp.fromDate(now.subtract(const Duration(minutes: 20))),
+        'reasonCode': 'CHILD_WELFARE',
+        'paymentStatus': 'completed',
+      });
+
+      // 3. Demo Patient Active Live Ticket (#A042)
+      await mbagathiQueue.doc('ticket_demo_042').set({
+        'clinicId': 'c_mbagathi',
+        'patientId': 'patient-demo-uid',
+        'ticketNumber': 'A042',
+        'status': 'waiting',
+        'joinedAt': Timestamp.fromDate(now.subtract(const Duration(minutes: 10))),
+        'reasonCode': 'GENERAL_TRIAGE',
+        'paymentStatus': 'completed',
+      });
+    }
+
     if (existing.docs.isNotEmpty) return;
 
     for (final clinicData in initialClinics) {
@@ -74,10 +122,9 @@ class FirestoreSeedDataSource {
           'startTime': Timestamp.fromDate(start),
           'endTime': Timestamp.fromDate(end),
           'capacity': 5,
-          'bookedCount': i == 2 ? 5 : i, // slot 2 full for test
+          'bookedCount': i == 2 ? 5 : i,
         });
       }
     }
   }
 }
-

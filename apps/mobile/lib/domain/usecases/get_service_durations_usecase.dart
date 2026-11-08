@@ -11,3 +11,4 @@ class GetServiceDurationsUseCase {
     return _repository.getRecentServiceDurations(clinicId);
   }
 }
+

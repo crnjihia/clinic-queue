@@ -37,6 +37,27 @@
     }
   },
 
+  "paymentTitle": "Ada ya Ushauri (KES {amount})",
+  "@paymentTitle": {
+    "placeholders": {
+      "amount": { "type": "double" }
+    }
+  },
+  "paymentPhoneLabel": "Nambari ya M-Pesa (+254...)",
+  "paymentStkPrompt": "Inatuma STK Push kwa {phone}. Tafadhali weka PIN ya M-Pesa kwenye simu yako.",
+  "@paymentStkPrompt": {
+    "placeholders": {
+      "phone": { "type": "String" }
+    }
+  },
+  "paymentSuccess": "Malipo ya M-Pesa yamepokelewa! Risiti #{receipt}",
+  "@paymentSuccess": {
+    "placeholders": {
+      "receipt": { "type": "String" }
+    }
+  },
+  "paymentFailed": "Malipo yamefeli. Tafadhali jaribu tena.",
+
   "queueTitle": "Hali ya Foleni",
   "queueTicketNumber": "Tiketi #{ticketNumber}",
   "@queueTicketNumber": {
@@ -63,4 +84,3 @@
   "errorGeneric": "Hitilafu imetokea. Tafadhali jaribu tena.",
   "errorDoubleBooking": "Nafasi hii imechukuliwa na mgonjwa mwingine. Tafadhali chagua nyingine."
 }
-

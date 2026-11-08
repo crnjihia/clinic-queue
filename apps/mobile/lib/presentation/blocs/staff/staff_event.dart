@@ -50,3 +50,4 @@ class StaffUpdateStatusRequested extends StaffEvent {
   @override
   List<Object?> get props => [clinicId, ticketId, newStatus];
 }
+

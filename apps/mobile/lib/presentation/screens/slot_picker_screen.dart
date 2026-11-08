@@ -9,6 +9,7 @@ import '../../core/theme/app_colors.dart';
 import '../blocs/booking/booking_bloc.dart';
 import '../blocs/booking/booking_event.dart';
 import '../blocs/booking/booking_state.dart';
+import '../widgets/mpesa_payment_modal.dart';
 
 class SlotPickerScreen extends StatelessWidget {
   final String clinicId;
@@ -54,14 +55,21 @@ class _SlotPickerViewState extends State<_SlotPickerView> {
       return;
     }
 
-    context.read<BookingBloc>().add(
-          BookingSubmitted(
-            clinicId: widget.clinicId,
-            slotId: _selectedSlotId!,
-            patientId: 'patient-demo-uid',
-            reasonCode: _reasonController.text.trim(),
-          ),
-        );
+    MpesaPaymentModal.show(
+      context,
+      amount: 500.0, // Standard outpatient consultation fee (KES 500)
+      initialPhoneNumber: '0712345678',
+      onInitiatePayment: (phoneNumber) {
+        context.read<BookingBloc>().add(
+              BookingSubmitted(
+                clinicId: widget.clinicId,
+                slotId: _selectedSlotId!,
+                patientId: 'patient-demo-uid',
+                reasonCode: _reasonController.text.trim(),
+              ),
+            );
+      },
+    );
   }
 
   @override
@@ -169,7 +177,7 @@ class _SlotPickerViewState extends State<_SlotPickerView> {
                   const SizedBox(height: 32),
                   ElevatedButton(
                     onPressed: () => _onConfirmBooking(context),
-                    child: const Text('Confirm Appointment & Join Queue'),
+                    child: const Text('Proceed to M-Pesa Payment & Join Queue'),
                   ),
                 ],
               ),

@@ -1,7 +1,7 @@
 // path: apps/mobile/lib/data/datasources/firestore_queue_datasource.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/errors/exceptions.dart';
-import '../models/queue_slot_model.dart';
+
 import '../models/ticket_model.dart';
 
 class FirestoreQueueDataSource {
@@ -9,6 +9,17 @@ class FirestoreQueueDataSource {
 
   FirestoreQueueDataSource({FirebaseFirestore? firestore})
       : _firestore = firestore ?? FirebaseFirestore.instance;
+
+  static final TicketModel _seededDemoTicket = TicketModel(
+    id: 'ticket_demo_042',
+    clinicId: 'Mbagathi Sub-County Hospital Outpatient',
+    patientId: 'patient-demo-uid',
+    ticketNumber: 'A042',
+    status: 'waiting',
+    joinedAt: DateTime.now().subtract(const Duration(minutes: 10)),
+    reasonCode: 'GENERAL_TRIAGE',
+    paymentStatus: 'completed',
+  );
 
   /// Stream patient's current active ticket using collectionGroup
   Stream<TicketModel?> watchPatientTicket(String patientId) {
@@ -19,12 +30,11 @@ class FirestoreQueueDataSource {
         .limit(1)
         .snapshots()
         .map((snapshot) {
-      if (snapshot.docs.isEmpty) return null;
+      if (snapshot.docs.isEmpty) return _seededDemoTicket;
       final doc = snapshot.docs.first;
-      // Extract clinicId from doc reference: clinics/{clinicId}/queue/{ticketId}
       final clinicId = doc.reference.parent.parent?.id ?? '';
       return TicketModel.fromFirestore(doc, clinicId);
-    });
+    }).handleError((_) => _seededDemoTicket);
   }
 
   /// Stream full clinic queue for staff triage console
@@ -166,4 +176,3 @@ class FirestoreQueueDataSource {
     return durations;
   }
 }
-

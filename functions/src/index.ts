@@ -1,16 +1,20 @@
 // path: functions/src/index.ts
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
-import { evaluateAndSendQueueAlert } from "./queueNotifications";
-import { QueueTicketDoc } from "./types";
 
 if (admin.apps.length === 0) {
   admin.initializeApp();
 }
 
+import { evaluateAndSendQueueAlert } from "./queueNotifications";
+import { onMpesaCallback } from "./paymentCallback";
+import { QueueTicketDoc } from "./types";
+
+export { onMpesaCallback };
+
 /**
  * Cloud Function triggered on any creation or update in clinics/{clinicId}/queue/{ticketId}
- * Evaluates queue position and dispatches "You are next" alerts to patients.
+ * Evaluates queue position and dispatches FCM push alerts and SMS notifications to patients.
  */
 export const onQueueTicketWritten = functions.firestore
   .document("clinics/{clinicId}/queue/{ticketId}")
@@ -29,7 +33,7 @@ export const onQueueTicketWritten = functions.firestore
       const result = await evaluateAndSendQueueAlert(clinicId, ticketId, ticketData);
       functions.logger.info(
         `Queue alert evaluation for ticket ${ticketId}: ` +
-        `sent=${result.sent}, position=${result.position}, tokens=${result.tokensCount}`
+        `fcmSent=${result.sentFcm}, smsSent=${result.sentSms}, position=${result.position}, tokens=${result.tokensCount}`
       );
       return result;
     } catch (error) {

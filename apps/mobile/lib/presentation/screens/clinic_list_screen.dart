@@ -32,6 +32,9 @@ class _ClinicListView extends StatefulWidget {
 class _ClinicListViewState extends State<_ClinicListView> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  String _selectedSubCounty = 'All';
+
+  final List<String> _subCounties = ['All', 'Kibra', 'Westlands', 'Embakasi'];
 
   @override
   void dispose() {
@@ -47,17 +50,24 @@ class _ClinicListViewState extends State<_ClinicListView> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
+            tooltip: 'Refresh Clinics',
             onPressed: () {
               context.read<BookingBloc>().add(const BookingClinicsLoadRequested());
             },
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: 'App Settings',
+            onPressed: () => context.push(RouteNames.settings),
           ),
         ],
       ),
       body: Column(
         children: [
           const NetworkBanner(isOffline: false),
+          // Search Input
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: TextField(
               controller: _searchController,
               onChanged: (val) => setState(() => _searchQuery = val),
@@ -78,6 +88,25 @@ class _ClinicListViewState extends State<_ClinicListView> {
               ),
             ),
           ),
+          // Sub-County Filter Chips
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: Row(
+              children: _subCounties.map((county) {
+                final isSelected = _selectedSubCounty == county;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8.0),
+                  child: FilterChip(
+                    label: Text(county),
+                    selected: isSelected,
+                    onSelected: (val) => setState(() => _selectedSubCounty = county),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+          const SizedBox(height: 8),
           Expanded(
             child: BlocBuilder<BookingBloc, BookingState>(
               builder: (context, state) {
@@ -107,12 +136,14 @@ class _ClinicListViewState extends State<_ClinicListView> {
                     final name = c.name.toLowerCase();
                     final sub = c.subCounty.toLowerCase();
                     final q = _searchQuery.toLowerCase();
-                    return name.contains(q) || sub.contains(q);
+                    final matchesQuery = name.contains(q) || sub.contains(q);
+                    final matchesCounty = _selectedSubCounty == 'All' || sub.contains(_selectedSubCounty.toLowerCase());
+                    return matchesQuery && matchesCounty;
                   }).toList();
 
                   if (filtered.isEmpty) {
                     return const Center(
-                      child: Text('No clinics found matching your search.'),
+                      child: Text('No clinics found matching your filter.'),
                     );
                   }
 

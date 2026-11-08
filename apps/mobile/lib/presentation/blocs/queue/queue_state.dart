@@ -74,3 +74,4 @@ class QueueFailureState extends QueueState {
   @override
   List<Object?> get props => [message];
 }
+

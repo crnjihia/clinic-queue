@@ -172,3 +172,4 @@ describe("Firestore Security Rules", () => {
     expect(rulesContent).to.include("allow delete: if false");
   });
 });
+

@@ -46,3 +46,4 @@ class BookingSubmitted extends BookingEvent {
   @override
   List<Object?> get props => [clinicId, slotId, patientId, reasonCode];
 }
+

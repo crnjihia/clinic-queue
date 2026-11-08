@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../presentation/screens/auth_screen.dart';
 import '../../presentation/screens/clinic_list_screen.dart';
 import '../../presentation/screens/live_queue_screen.dart';
+import '../../presentation/screens/settings_screen.dart';
 import '../../presentation/screens/slot_picker_screen.dart';
 import '../../presentation/screens/staff_dashboard_screen.dart';
 import '../../presentation/screens/ticket_confirmation_screen.dart';
@@ -68,6 +69,12 @@ class AppRouter {
               child: StaffDashboardScreen(),
             ),
           ),
+          GoRoute(
+            path: RouteNames.settings,
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: SettingsScreen(),
+            ),
+          ),
         ],
       ),
       GoRoute(
@@ -105,27 +112,45 @@ class _ScaffoldWithNavBar extends StatelessWidget {
     if (location.startsWith(RouteNames.clinics)) return 0;
     if (location.startsWith(RouteNames.liveQueue)) return 1;
     if (location.startsWith(RouteNames.staffDashboard)) return 2;
+    if (location.startsWith(RouteNames.settings)) return isStaff ? 3 : 2;
     return 0;
   }
 
+  bool get isStaff => AppRouter.currentUserRole == 'staff';
+
   void _onItemTapped(int index, BuildContext context) {
-    switch (index) {
-      case 0:
-        context.go(RouteNames.clinics);
-        break;
-      case 1:
-        context.go(RouteNames.liveQueue);
-        break;
-      case 2:
-        context.go(RouteNames.staffDashboard);
-        break;
+    if (isStaff) {
+      switch (index) {
+        case 0:
+          context.go(RouteNames.clinics);
+          break;
+        case 1:
+          context.go(RouteNames.liveQueue);
+          break;
+        case 2:
+          context.go(RouteNames.staffDashboard);
+          break;
+        case 3:
+          context.go(RouteNames.settings);
+          break;
+      }
+    } else {
+      switch (index) {
+        case 0:
+          context.go(RouteNames.clinics);
+          break;
+        case 1:
+          context.go(RouteNames.liveQueue);
+          break;
+        case 2:
+          context.go(RouteNames.settings);
+          break;
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final isStaff = AppRouter.currentUserRole == 'staff';
-
     return Scaffold(
       body: child,
       bottomNavigationBar: NavigationBar(
@@ -148,9 +173,13 @@ class _ScaffoldWithNavBar extends StatelessWidget {
               selectedIcon: Icon(Icons.medical_services),
               label: 'Staff Portal',
             ),
+          const NavigationDestination(
+            icon: Icon(Icons.settings_outlined),
+            selectedIcon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
         ],
       ),
     );
   }
 }
-

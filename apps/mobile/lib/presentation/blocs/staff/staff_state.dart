@@ -61,3 +61,4 @@ class StaffFailureState extends StaffState {
   @override
   List<Object?> get props => [message];
 }
+
